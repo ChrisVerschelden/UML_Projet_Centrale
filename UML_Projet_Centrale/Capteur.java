@@ -1,4 +1,6 @@
-public class Capteur extends Object{
+package UML_Projet_Centrale;
+
+public class Capteur implements Objet{
     private long id ;
     private String etats ;
     private int valeur ;

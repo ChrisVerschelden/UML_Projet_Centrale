@@ -1,4 +1,6 @@
-public class Actionneur extends Object{
+package UML_Projet_Centrale;
+
+public class Actionneur implements Objet{
 
     private long id ;
     private String Etats ;

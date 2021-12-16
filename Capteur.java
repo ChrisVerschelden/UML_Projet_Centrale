@@ -1,12 +1,14 @@
 public class Capteur extends Object{
-    private int id ;
-    private String Etats ;
+    private long id ;
+    private String etats ;
     private int valeur ;
+    private long freq ;
 
-    public Capteur(int id,String Etats,int valeur) {
+    public Capteur(long id,String etats,int valeur, long freq) {
         this.id = id ;
-        this.Etats = Etats;
+        this.etats = etats;
         this.valeur = valeur;
+        this.freq = freq ;
     }
 
     public void selfCheck() {

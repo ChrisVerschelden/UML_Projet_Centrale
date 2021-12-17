@@ -12,7 +12,17 @@ public class Capteur implements Objet{
     private int valeurCritique ;
     private Centrale c ;
     
+<<<<<<< HEAD
 
+=======
+    public void timer() throws InterruptedException {
+        while (true) {
+            Thread.sleep(this.freq); // Wait 10 seconds
+            selfCheck();
+        }
+    }
+    
+>>>>>>> e0fcc08ae4e494aa9ea7a8c32111149f9e1d6dc5
     public Capteur(long id,int etats, long freq) throws InterruptedException {
         this.id = id ;
         this.etats = etats;

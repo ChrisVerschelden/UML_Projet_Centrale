@@ -18,7 +18,7 @@ public class Actionneur implements Objet{
     }
 
     @Override
-    public void update(Centrale c) {
+    public void update() {
         Random r = new Random();
         int low = 10;
         int high = 100;
@@ -28,7 +28,7 @@ public class Actionneur implements Objet{
     }
 
     @Override
-    public void notifyCentrale(Object o) {
+    public void notifyCentrale() {
         System.out.println(this.etats);
     }
 

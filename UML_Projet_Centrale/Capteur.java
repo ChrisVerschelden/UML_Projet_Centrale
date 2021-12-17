@@ -23,13 +23,14 @@ public class Capteur implements Objet{
         this.etats = etats;
         
         this.freq = freq ;
-        this.valeurCritique = 30;
+        this.valeurCritique = 90;
         timer();
         Random r = new Random();
         int low = 10;
         int high = 100;
         int randomNumber = r.nextInt(high-low) + low;
-        this.valeur = randomNumber;
+        this.valeur = randomNumber
+        ;
     }
     public long getId() {
         return this.id;

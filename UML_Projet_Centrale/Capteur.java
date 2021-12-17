@@ -10,14 +10,12 @@ public class Capteur implements Objet{
     private Centrale c ;
     
     public void timer() throws InterruptedException {
-        int x = 1 ;
-        while (x != 2) {
+        while (true) {
             Thread.sleep(this.freq); // Wait 10 seconds
             selfCheck();
         }
     }
     
-
     public Capteur(long id,int etats, long freq) throws InterruptedException {
         this.id = id ;
         this.etats = etats;

@@ -18,13 +18,18 @@ public class Capteur implements Objet{
     }
     
 
-    public Capteur(long id,int etats,int valeur, long freq) throws InterruptedException {
+    public Capteur(long id,int etats, long freq) throws InterruptedException {
         this.id = id ;
         this.etats = etats;
-        this.valeur = valeur;
+        
         this.freq = freq ;
         this.valeurCritique = 30;
         timer();
+        Random r = new Random();
+        int low = 10;
+        int high = 100;
+        int randomNumber = r.nextInt(high-low) + low;
+        this.valeur = randomNumber;
     }
     public long getId() {
         return this.id;

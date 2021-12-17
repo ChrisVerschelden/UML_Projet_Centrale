@@ -1,121 +1,118 @@
 package UML_Projet_Centrale;
 
-import java.awt.Color;
+import java.awt.*;
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-import javax.swing.JFrame;
+import javax.swing.*;
 import javax.swing.JPanel;
 
+
 public class Terminal extends JPanel {
-  private double[] values;
 
-  private String[] names;
+    private JFrame frame;
+    private Centrale c;
 
-  private String title;
-
-  public Terminal(double[] v, String[] n, String t) {
-    names = n;
-    values = v;
-    title = t;
-  }
-
-  public void paintComponent(Graphics g) {
-    super.paintComponent(g);
-    if (values == null || values.length == 0)
-      return;
-    double minValue = 0;
-    double maxValue = 0;
-    for (int i = 0; i < values.length; i++) {
-      if (minValue > values[i])
-        minValue = values[i];
-      if (maxValue < values[i])
-        maxValue = values[i];
-    }
-
-    Dimension d = getSize();
-    int clientWidth = d.width;
-    int clientHeight = d.height;
-    int barWidth = clientWidth / values.length;
-
-    Font titleFont = new Font("SansSerif", Font.BOLD, 20);
-    FontMetrics titleFontMetrics = g.getFontMetrics(titleFont);
-    Font labelFont = new Font("SansSerif", Font.PLAIN, 10);
-    FontMetrics labelFontMetrics = g.getFontMetrics(labelFont);
-
-    int titleWidth = titleFontMetrics.stringWidth(title);
-    int y = titleFontMetrics.getAscent();
-    int x = (clientWidth - titleWidth) / 2;
-    g.setFont(titleFont);
-    g.drawString(title, x, y);
-
-    int top = titleFontMetrics.getHeight();
-    int bottom = labelFontMetrics.getHeight();
-    if (maxValue == minValue)
-      return;
-    double scale = (clientHeight - top - bottom) / (maxValue - minValue);
-    y = clientHeight - labelFontMetrics.getDescent();
-    g.setFont(labelFont);
-
-    for (int i = 0; i < values.length; i++) {
-      int valueX = i * barWidth + 1;
-      int valueY = top;
-      int height = (int) (values[i] * scale);
-      if (values[i] >= 0)
-        valueY += (int) ((maxValue - values[i]) * scale);
-      else {
-        valueY += (int) (maxValue * scale);
-        height = -height;
-      }
-
-      g.setColor(Color.red);
-      g.fillRect(valueX, valueY, barWidth - 2, height);
-      g.setColor(Color.black);
-      g.drawRect(valueX, valueY, barWidth - 2, height);
-      int labelWidth = labelFontMetrics.stringWidth(names[i]);
-      x = i * barWidth + (barWidth - labelWidth) / 2;
-      g.drawString(names[i], x, y);
-    }
-  }
-
-  public static void majAffichage(Centrale c) {
-    JFrame f = new JFrame();
-    f.setSize(400, 300);
-    double[] values = new double[c.getListeObjets().size()];
-    String[] names = new String[c.getListeObjets().size()];
-    int i = 0;
-    for (Object o : c.getListeObjets()) {
-         if(o instanceof Capteur){
-             Capteur cap = (Capteur) o;
-             values[0] = (double) cap.getValeur();
-             names[0] = "" + cap.getId();
-             i++;
-         }
-    }
-
-    values[0] = 1;
-    names[0] = "Item 1";
-
-    values[1] = 2;
-    names[1] = "Item 2";
-
-    values[2] = 4;
-    names[2] = "Item 3";
-
-    f.getContentPane().add(new Terminal(values, names, "title"));
-
-    WindowListener wndCloser = new WindowAdapter() {
-      public void windowClosing(WindowEvent e) {
-        System.exit(0);
-      }
+    private static Color[] colors = {
+        Color.red,
+        Color.blue,
+        Color.green,
+        Color.CYAN,
+        Color.LIGHT_GRAY,
+        Color.MAGENTA,
+        Color.ORANGE,
+        Color.PINK,
+        Color.DARK_GRAY,
+        Color.yellow        
     };
-    f.addWindowListener(wndCloser);
-    f.setVisible(true);
-  }
 
+	private Map<Color, Integer> bars =
+            new LinkedHashMap<Color, Integer>();
+	
+	/**
+	 * Add new bar to chart
+	 * @param color color to display bar
+	 * @param value size of bar
+	 */
+	public void addBar(Color color, int value)
+	{
+		bars.put(color, value);
+		repaint();
+	}
+	
+	@Override
+	protected void paintComponent(Graphics g)
+	{
+		// determine longest bar
+		
+		int max = Integer.MIN_VALUE;
+		for (Integer value : bars.values())
+		{
+			max = Math.max(max, value);
+		}
+		
+		// paint bars
+		
+		int width = (getWidth() / bars.size()) - 2;
+		int x = 1;
+		for (Color color : bars.keySet())
+		{
+			int value = bars.get(color);
+			int height = (int) 
+                            ((getHeight()-5) * ((double)value / max));
+			g.setColor(color);
+			g.fillRect(x, getHeight() - height, width, height);
+			g.setColor(Color.black);
+			g.drawRect(x, getHeight() - height, width, height);
+			x += (width + 2);
+		}
+	}
+
+	@Override
+	public Dimension getPreferredSize() {
+		return new Dimension(bars.size() * 10 + 2, 50);
+	}
+
+	public void launchTerminal(Centrale c)
+	{
+		JFrame frame = new JFrame("Bar Chart");
+		Terminal chart = new Terminal();
+        int i = 0;
+        for (Objet o : c.getListeObjets()) {
+            if (o instanceof Capteur){
+                Capteur cap = (Capteur) o;
+                chart.addBar(colors[i], cap.getValeur());
+                i++;
+            }
+        }	
+
+        frame.getContentPane().add(chart);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(1920, 800);
+		frame.setVisible(true);
+
+        majAffichage();
+	}
+
+    public void majAffichage(){
+        Terminal chart = new Terminal();
+        int i = 0;
+        for (Objet o : c.getListeObjets()) {
+            if (o instanceof Capteur){
+                Capteur cap = (Capteur) o;
+                chart.addBar(colors[i], cap.getValeur());
+                i++;
+            }
+        }	
+        frame.getContentPane().add(chart);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(1920, 800);
+		frame.setVisible(true);
+
+        majAffichage();
+    } 
 }

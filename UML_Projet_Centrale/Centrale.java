@@ -37,7 +37,6 @@ public class Centrale {
 
     public void update(){
         for (Terminal t : listeTerminaux) {
-            t.majAffichage(this);
         }
     }
 

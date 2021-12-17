@@ -1,5 +1,8 @@
 package UML_Projet_Centrale;
 import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Capteur implements Objet{
     private long id ;
@@ -9,14 +12,6 @@ public class Capteur implements Objet{
     private int valeurCritique ;
     private Centrale c ;
     
-    public void timer() throws InterruptedException {
-        int x = 1 ;
-        while (x != 2) {
-            Thread.sleep(this.freq); // Wait 10 seconds
-            selfCheck();
-        }
-    }
-    
 
     public Capteur(long id,int etats, long freq) throws InterruptedException {
         this.id = id ;
@@ -24,13 +19,7 @@ public class Capteur implements Objet{
         
         this.freq = freq ;
         this.valeurCritique = 90;
-        timer();
-        Random r = new Random();
-        int low = 10;
-        int high = 100;
-        int randomNumber = r.nextInt(high-low) + low;
-        this.valeur = randomNumber
-        ;
+        runCapteur(this);
     }
     public long getId() {
         return this.id;
@@ -67,17 +56,30 @@ public class Capteur implements Objet{
         }
     }
 
+    public void runCapteur(Capteur c){
+        
+        Runnable runnable = new Runnable() {
+            public void run() {
+                Random r = new Random();
+                int low = 10;
+                int high = 100;
+                int randomNumber = r.nextInt(high-low) + low;
+                c.valeur = randomNumber;
+                notifyCentrale();
+            }
+        };
+        
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+        executor.scheduleAtFixedRate(runnable, 0, 1, TimeUnit.SECONDS);
+    }
+
     @Override
     public void update() {
-        Random r = new Random();
-        int low = 10;
-        int high = 100;
-        int randomNumber = r.nextInt(high-low) + low;
-        this.valeur = randomNumber ;
+               
     }
 
     @Override
     public void notifyCentrale() {
-        
+        this.c.update();
     }
 }
